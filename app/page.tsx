@@ -534,7 +534,7 @@ export default function Home() {
 </div>
       <footer className="footer mt-8 text-center text-white">
         <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
-        <p>Visit my <a href="https://prathamrajsinha.com" target="_blank" rel="noopener noreferrer" className="underline">portfolio</a></p>
+        <p>Visit my portfolio: <a href="https://prathamrajsinha.com" target="_blank" rel="noopener noreferrer" className="underline">prathamrajsinha.com</a></p>
       </footer>
     </div>
   );
