@@ -532,7 +532,7 @@ export default function Home() {
           )}
         </div>
 </div>
-      <footer className="footer mt-8 text-center text-white z-100">
+      <footer className="footer mt-8 text-center text-white z-10000">
         <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
         <p>Visit my portfolio: <a href="https://prathamrajsinha.com" target="_blank" rel="noopener noreferrer" className="underline">prathamrajsinha.com</a></p>
       </footer>
