@@ -329,11 +329,11 @@ export default function Home() {
     setTimeout(() => setEditPrompt(''), 2000);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
-      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" style={{zIndex: 0}}></canvas>
-      {isLoading && <LoadingScreen />}
-      <div className="flex-grow flex flex-col relative z-10">
+return (
+  <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
+    <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" style={{zIndex: 0}}></canvas>
+    {isLoading && <LoadingScreen />}
+    <div className="flex-grow flex flex-col relative z-10">
         <div className="max-w-4xl mx-auto w-full">
           <h1 className="text-4xl font-bold text-center text-white mb-8">AI Email Generator</h1>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-lg p-6 space-y-6">
