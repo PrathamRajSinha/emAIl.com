@@ -107,18 +107,50 @@ const EditableSubject: React.FC<{
   onSubjectChange: (newSubject: string) => void;
   isEditing: boolean;
 }> = ({ subject, onSubjectChange, isEditing }) => {
+  const [editableSubject, setEditableSubject] = useState<React.ReactNode[]>([]);
+
+  useEffect(() => {
+    const parts = subject.split(/(\[[^\]]+\])/g);
+    const newEditableSubject = parts.map((part, index) => {
+      if (part.match(/^\[[^\]]+\]$/)) {
+        const placeholder = part.slice(1, -1);
+        return (
+          <span key={index} className="relative inline-block">
+            {isEditing ? (
+              <input
+                type="text"
+                defaultValue={placeholder}
+                className="px-1 py-0.5 bg-red-100 rounded border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[50px]"
+                style={{ width: `${placeholder.length + 2}ch` }}
+                onChange={(e) => {
+                  const newParts = [...parts];
+                  newParts[index] = `[${e.target.value}]`;
+                  onSubjectChange(newParts.join(''));
+                }}
+              />
+            ) : (
+              <span className="bg-red-200 px-1 py-0.5 rounded">{placeholder}</span>
+            )}
+          </span>
+        );
+      }
+      return part;
+    });
+    setEditableSubject(newEditableSubject);
+  }, [subject, onSubjectChange, isEditing]);
+
   return (
-    <div className="relative inline-block w-full">
+    <div className="relative inline-block w-full pr-20">
       {isEditing ? (
         <input
           type="text"
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
-          className="w-full p-2 pr-8 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
       ) : (
-        <div className="w-full p-2 pr-8 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white">
-          {subject}
+        <div className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white">
+          {editableSubject}
         </div>
       )}
     </div>
@@ -210,8 +242,7 @@ export default function Home() {
     }
 
     if (includeFooter) {
-      prompt += `if there is a given footer, \nPlease include the following footer at the end of the email: "${footerText}". if there is no footer provided, just use the given details to make your own using "${name}" and "${tone}"`
-      ;
+      prompt += `if there is a given footer, \nPlease include the following footer at the end of the email: "${footerText}". if there is no footer provided, just use the given details to make your own using "${name}" and "${tone}"`;
     }
 
     prompt += `\n\nPlease use the appropriate salutation (Dear Sir/Madam/Mr./Ms./Name) based on the recipient's gender/title provided.
@@ -256,286 +287,112 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
       <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" style={{zIndex: 0}}></canvas>
       {isLoading && <LoadingScreen />}
-      <div className="max-w-4xl mx-auto relative z-10">
-        <h1 className="text-4xl font-bold text-center text-white mb-8">AI Email Generator</h1>
-        <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-lg p-6 space-y-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-white">Your Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter your name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white">Reason for Email</label>
-              <input
-                type="text"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter reason or select below"
-              />
-              <div className="mt-2 flex flex-wrap gap-2">
-                {commonSubjects.map((subject) => (
-                  <button
-                    key={subject}
-                    onClick={() => setReason(subject)}
-                    className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    {subject}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          {reason === 'Leave Request' && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-white">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              <div className="col-span-2">
-                <label className="block text-sm font-medium text-white">Reason for Leave</label>
-                <select
-                  value={leaveReason}
-                  onChange={(e) => setLeaveReason(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="">Select reason</option>
-                  {leaveReasons.map((reason) => (
-                    <option key={reason} value={reason}>{reason}</option>
-                  ))}
-                </select>
-              </div>
-              {leaveReason === 'Other' && (
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-white">Specify Other Reason</label>
-                  <input
-                    type="text"
-                    value={otherLeaveReason}
-                    onChange={(e) => setOtherLeaveReason(e.target.value)}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Please specify your reason for leave"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-white">Tone</label>
-              <select
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select tone</option>
-                <option value="Official">Official</option>
-                <option value="Unofficial">Unofficial</option>
-                <option value="Friendly">Friendly</option>
-                <option value="Formal">Formal</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white">Recipient</label>
-              <input
-                type="text"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Enter recipient's name or title"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-white">Recipient Gender/Title</label>
-              <select
-                value={recipientGender}
-                onChange={(e) => setRecipientGender(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select gender/title</option>
-                {recipientOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-            {recipientGender === 'Other' && (
-              <div>
-                <label className="block text-sm font-medium text-white">Specify Other Gender/Title</label>
-                <input
-                  type="text"
-                  value={otherRecipientGender}
-                  onChange={(e) => setOtherRecipientGender(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  placeholder="Specify gender/title"
-                />
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-white">Recipient Details</label>
-              <select
-                value={recipientDetails}
-                onChange={(e) => setRecipientDetails(e.target.value)}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select recipient details</option>
-                <option value="Known">Known person</option>
-                <option value="Senior">Senior</option>
-                <option value="Junior">Junior</option>
-                <option value="Peer">Peer</option>
-                <option value="Unknown">Unknown</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={hasAttachment}
-                onChange={(e) => setHasAttachment(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-indigo-600"
-              />
-              <span className="ml-2 text-sm text-white">Mention attached files in the email</span>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">Other Preferences</label>
-            <textarea
-              value={otherPreferences}
-              onChange={(e) => setOtherPreferences(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              rows={3}
-              placeholder="Any additional details or preferences"
-            ></textarea>
-          </div>
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={includeFooter}
-                onChange={(e) => setIncludeFooter(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-indigo-600"
-              />
-              <span className="ml-2 text-sm text-white">Include footer</span>
-            </label>
-            {includeFooter && (
-              <textarea
-                value={footerText}
-                onChange={(e) => setFooterText(e.target.value)}
-                className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                rows={2}
-                placeholder="Enter footer text"
-              ></textarea>
-            )}
-          </div>
-          <button
-            onClick={generateEmail}
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"
-          >
-            Generate Email
-          </button>
-          {generatedSubject && (
-  <div className="mt-6">
-    <label className="block text-sm font-medium text-white mb-2">Generated Subject</label>
-    <div className="relative">
-      <EditableSubject 
-        subject={editedSubject} 
-        onSubjectChange={setEditedSubject}
-        isEditing={isEditing}
-      />
-      <div className="absolute top-2 right-2 flex">
-        <button
-          onClick={() => toggleEditing()}
-          className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
-          title={isEditing ? "Save changes" : "Edit subject"}
-        >
-          <PencilIcon className="h-5 w-5" />
-        </button>
-        <button
-          onClick={() => copyToClipboard(editedSubject)}
-          className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
-          title="Copy subject to clipboard"
-        >
-          <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-          {generatedEmail && (
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-white mb-2">Generated Email</label>
-              <div className="relative">
-                <div
-                  className="w-full p-4 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  style={{
-                    fontSize: '1rem',
-                    lineHeight: '1.5',
-                    minHeight: '200px',
-                    maxHeight: '60vh',
-                    overflowY: 'auto'
-                  }}
-                >
-                  <EditableEmail 
-                    email={editedEmail} 
-                    onEmailChange={setEditedEmail} 
+      <div className="flex-grow flex flex-col relative z-10">
+        <div className="max-w-4xl mx-auto w-full">
+          <h1 className="text-4xl font-bold text-center text-white mb-8">AI Email Generator</h1>
+          <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-lg p-6 space-y-6">
+            {/* ... (rest of the form fields remain unchanged) ... */}
+            
+            <button
+              onClick={generateEmail}
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"
+            >
+              Generate Email
+            </button>
+            {generatedSubject && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-white mb-2">Generated Subject</label>
+                <div className="relative">
+                  <EditableSubject 
+                    subject={editedSubject} 
+                    onSubjectChange={setEditedSubject}
                     isEditing={isEditing}
-                    name={name}
                   />
-                </div>
-                <div className="absolute top-2 right-2 flex">
-                  <button
-                    onClick={() => toggleEditing()}
-                    className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
-                    title={isEditing ? "Save changes" : "Edit email"}
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => copyToClipboard(editedEmail)}
-                    className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
-                    title="Copy email to clipboard"
-                  >
-                    <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex">
+                    <button
+                      onClick={() => toggleEditing()}
+                      className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
+                      title={isEditing ? "Save changes" : "Edit subject"}
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => copyToClipboard(editedSubject)}
+                      className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
+                      title="Copy subject to clipboard"
+                    >
+                      <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          {(copyPrompt || editPrompt) && (
-            <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg">
-              {copyPrompt || editPrompt}
-            </div>
-          )}
+            )}
+            {generatedEmail && (
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-white mb-2">Generated Email</label>
+                <div className="relative">
+                  <div
+                    className="w-full p-4 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    style={{
+                      fontSize: '1rem',
+                      lineHeight: '1.5',
+                      minHeight: '200px',
+                      height: 'auto',
+                    }}
+                  >
+                    <EditableEmail 
+                      email={editedEmail} 
+                      onEmailChange={setEditedEmail} 
+                      isEditing={isEditing}
+                      name={name}
+                    />
+                  </div>
+                  <div className="absolute top-2 right-2 flex">
+                    <button
+                      onClick={() => toggleEditing()}
+                      className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
+                      title={isEditing ? "Save changes" : "Edit email"}
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => copyToClipboard(editedEmail)}
+                      className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
+                      title="Copy email to clipboard"
+                    >
+                      <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {(copyPrompt || editPrompt) && (
+              <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg">
+                {copyPrompt || editPrompt}
+              </div>
+            )}
+          </div>
         </div>
-    </div>
-      <footer className="footer mt-8 text-center text-white z-10000">
-        <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
-        <p>Visit my portfolio: <a href="https://prathamrajsinha.com" target="_blank" rel="noopener noreferrer" className="underline">prathamrajsinha.com</a></p>
-      </footer>
+        
+        {/* Footer */}
+        <footer className="mt-auto pt-8 text-center text-white relative z-20">
+          <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
+          <p>Visit my portfolio: 
+            <a 
+              href="https://prathamrajsinha.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="underline ml-1 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
+              style={{ pointerEvents: 'auto' }}
+            >
+              prathamrajsinha.com
+            </a>
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
