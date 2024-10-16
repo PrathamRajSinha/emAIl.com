@@ -294,8 +294,195 @@ export default function Home() {
         <div className="max-w-4xl mx-auto w-full">
           <h1 className="text-4xl font-bold text-center text-white mb-8">AI Email Generator</h1>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-lg p-6 space-y-6">
-            {/* ... (rest of the form fields remain unchanged) ... */}
-            
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-white">Your Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Enter your name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white">Reason for Email</label>
+                <input
+                  type="text"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Enter reason or select below"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {commonSubjects.map((subject) => (
+                    <button
+                      key={subject}
+                      onClick={() => setReason(subject)}
+                      className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      {subject}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {reason === 'Leave Request' && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white">Start Date</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white">End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-white">Reason for Leave</label>
+                  <select
+                    value={leaveReason}
+                    onChange={(e) => setLeaveReason(e.target.value)}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select reason</option>
+                    {leaveReasons.map((reason) => (
+                      <option key={reason} value={reason}>{reason}</option>
+                    ))}
+                  </select>
+                </div>
+                {leaveReason === 'Other' && (
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-white">Specify Other Reason</label>
+                    <input
+                      type="text"
+                      value={otherLeaveReason}
+                      onChange={(e) => setOtherLeaveReason(e.target.value)}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Please specify your reason for leave"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-white">Tone</label>
+                <select
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">Select tone</option>
+                  <option value="Official">Official</option>
+                  <option value="Unofficial">Unofficial</option>
+                  <option value="Friendly">Friendly</option>
+                  <option value="Formal">Formal</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white">Recipient</label>
+                <input
+                  type="text"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Enter recipient's name or title"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-white">Recipient Gender/Title</label>
+                <select
+                  value={recipientGender}
+                  onChange={(e) => setRecipientGender(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">Select gender/title</option>
+                  {recipientOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+              {recipientGender === 'Other' && (
+                <div>
+                  <label className="block text-sm font-medium text-white">Specify Other Gender/Title</label>
+                  <input
+                    type="text"
+                    value={otherRecipientGender}
+                    onChange={(e) => setOtherRecipientGender(e.target.value)}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Specify gender/title"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-white">Recipient Details</label>
+                <select
+                  value={recipientDetails}
+                  onChange={(e) => setRecipientDetails(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">Select recipient details</option>
+                  <option value="Known">Known person</option>
+                  <option value="Senior">Senior</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Peer">Peer</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={hasAttachment}
+                  onChange={(e) => setHasAttachment(e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-indigo-600"
+                />
+                <span className="ml-2 text-sm text-white">Mention attached files in the email</span>
+              </label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white">Other Preferences</label>
+              <textarea
+                value={otherPreferences}
+                onChange={(e) => setOtherPreferences(e.target.value)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                rows={3}
+                placeholder="Any additional details or preferences"
+              ></textarea>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={includeFooter}
+                  onChange={(e) => setIncludeFooter(e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-indigo-600"
+                />
+                <span className="ml-2 text-sm text-white">Include footer</span>
+              </label>
+              {includeFooter && (
+                <textarea
+                  value={footerText}
+                  onChange={(e) => setFooterText(e.target.value)}
+                  className="mt-2 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  rows={2}
+                  placeholder="Enter footer text"
+                ></textarea>
+              )}
+            </div>
             <button
               onClick={generateEmail}
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"
