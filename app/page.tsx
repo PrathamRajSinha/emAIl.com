@@ -67,7 +67,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
               <input
                 type="text"
                 defaultValue={placeholder}
-                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
+                className="px-1 py-0.5 bg-purple-100 rounded border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
                   const newParts = [...parts];
@@ -76,7 +76,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
                 }}
               />
             ) : (
-              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
+              <span className="bg-purple-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
         );
@@ -92,7 +92,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
         <textarea
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
-          className="w-full h-full p-2 bg-white bg-opacity-90 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full h-full p-2 bg-white bg-opacity-20 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           style={{ minHeight: '200px' }}
         />
       ) : (
@@ -120,7 +120,7 @@ const EditableSubject: React.FC<{
               <input
                 type="text"
                 defaultValue={placeholder}
-                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
+                className="px-1 py-0.5 bg-purple-100 rounded border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
                   const newParts = [...parts];
@@ -129,7 +129,7 @@ const EditableSubject: React.FC<{
                 }}
               />
             ) : (
-              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
+              <span className="bg-purple-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
         );
@@ -146,10 +146,10 @@ const EditableSubject: React.FC<{
           type="text"
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
-          className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full p-2 border border-purple-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         />
       ) : (
-        <div className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800">
+        <div className="w-full p-2 border border-purple-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white">
           {editableSubject}
         </div>
       )}
@@ -181,6 +181,9 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
   const [copyPrompt, setCopyPrompt] = useState('');
   const [editPrompt, setEditPrompt] = useState('');
+  const [inputEmail, setInputEmail] = useState('');
+  const [generatedReply, setGeneratedReply] = useState('');
+  const [editedReply, setEditedReply] = useState('');
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -274,6 +277,46 @@ export default function Home() {
     }
   };
 
+  const generateReply = async () => {
+    setIsLoading(true);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    let prompt = `Generate a reply to the following email:
+
+    ${inputEmail}
+
+    Please use the following details for the reply:
+    From: ${name}
+    Tone: ${tone}
+    Other Preferences: ${otherPreferences}
+
+    Use square brackets [] to denote any placeholders or parts that might need editing, such as [Project Name] or [Specific Date].
+    Do not use any symbols like ** in the email.
+
+    Generate both a subject line (which should be a reply to the original subject) and the main email body. Format the response as follows:
+    Subject: Re: [Generated Subject]
+
+    [Generated Reply Body]`;
+
+    try {
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      const [subject, ...replyBody] = text.split('\n\n');
+      setGeneratedSubject(subject.replace('Subject: ', ''));
+      setEditedSubject(subject.replace('Subject: ', ''));
+      setGeneratedReply(replyBody.join('\n\n'));
+      setEditedReply(replyBody.join('\n\n'));
+    } catch (error) {
+      console.error('Error generating reply:', error);
+      setGeneratedSubject('');
+      setEditedSubject('');
+      setGeneratedReply('An error occurred while generating the reply. Please try again.');
+      setEditedReply('An error occurred while generating the reply. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopyPrompt('Email copied!');
@@ -301,7 +344,7 @@ export default function Home() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Enter your name"
                 />
               </div>
@@ -489,10 +532,32 @@ export default function Home() {
             >
               Generate Email
             </button>
+            
+            {/* New section for email reply */}
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold text-white mb-4">Generate Reply</h2>
+              <div>
+                <label className="block text-sm font-medium text-white">Input Email to Reply</label>
+                <textarea
+                  value={inputEmail}
+                  onChange={(e) => setInputEmail(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  rows={5}
+                  placeholder="Paste the email you want to reply to here"
+                ></textarea>
+              </div>
+              <button
+                onClick={generateReply}
+                className="mt-4 w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out transform hover:scale-105"
+              >
+                Generate Reply
+              </button>
+            </div>
+
             {generatedSubject && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold text-white mb-2">Generated Subject</h2>
-                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
+                <div className="bg-purple-800 bg-opacity-50 rounded-lg p-4 shadow-md">
                   <div className="relative">
                     <EditableSubject 
                       subject={editedSubject} 
@@ -502,7 +567,7 @@ export default function Home() {
                     <div className="absolute top-2 right-2 flex space-x-2">
                       <button
                         onClick={() => toggleEditing()}
-                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
+                        className="p-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none transition duration-150 ease-in-out"
                         title={isEditing ? "Save changes" : "Edit subject"}
                       >
                         <PencilIcon className="h-5 w-5" />
@@ -519,15 +584,16 @@ export default function Home() {
                 </div>
               </div>
             )}
-            {generatedEmail && (
+
+            {(generatedEmail || generatedReply) && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold text-white mb-2">Generated Email</h2>
-                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
+                <div className="bg-purple-800 bg-opacity-50 rounded-lg p-4 shadow-md">
                   <div className="relative">
-                    <div className="w-full text-gray-800" style={{ minHeight: '200px' }}>
+                    <div className="w-full text-white" style={{ minHeight: '200px' }}>
                       <EditableEmail 
-                        email={editedEmail} 
-                        onEmailChange={setEditedEmail} 
+                        email={generatedReply || editedEmail} 
+                        onEmailChange={generatedReply ? setEditedReply : setEditedEmail} 
                         isEditing={isEditing}
                         name={name}
                       />
@@ -535,13 +601,13 @@ export default function Home() {
                     <div className="absolute top-2 right-2 flex space-x-2">
                       <button
                         onClick={() => toggleEditing()}
-                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
+                        className="p-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none transition duration-150 ease-in-out"
                         title={isEditing ? "Save changes" : "Edit email"}
                       >
                         <PencilIcon className="h-5 w-5" />
                       </button>
                       <button
-                        onClick={() => copyToClipboard(editedEmail)}
+                        onClick={() => copyToClipboard(generatedReply || editedEmail)}
                         className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none transition duration-150 ease-in-out"
                         title="Copy email to clipboard"
                       >
