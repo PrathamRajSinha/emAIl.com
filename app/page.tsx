@@ -67,7 +67,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
               <input
                 type="text"
                 defaultValue={placeholder}
-                className="px-1 py-0.5 bg-red-100 rounded border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[50px]"
+                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
                   const newParts = [...parts];
@@ -76,7 +76,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
                 }}
               />
             ) : (
-              <span className="bg-red-200 px-1 py-0.5 rounded">{placeholder}</span>
+              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
         );
@@ -92,7 +92,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
         <textarea
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
-          className="w-full h-full p-2 bg-white bg-opacity-20 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full h-full p-2 bg-white bg-opacity-90 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           style={{ minHeight: '200px' }}
         />
       ) : (
@@ -120,7 +120,7 @@ const EditableSubject: React.FC<{
               <input
                 type="text"
                 defaultValue={placeholder}
-                className="px-1 py-0.5 bg-red-100 rounded border border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 min-w-[50px]"
+                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
                   const newParts = [...parts];
@@ -129,7 +129,7 @@ const EditableSubject: React.FC<{
                 }}
               />
             ) : (
-              <span className="bg-red-200 px-1 py-0.5 rounded">{placeholder}</span>
+              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
         );
@@ -146,10 +146,10 @@ const EditableSubject: React.FC<{
           type="text"
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       ) : (
-        <div className="w-full p-2 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white">
+        <div className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800">
           {editableSubject}
         </div>
       )}
@@ -491,74 +491,65 @@ export default function Home() {
             </button>
             {generatedSubject && (
               <div className="mt-6">
-                <label className="block text-sm font-medium text-white mb-2">Generated Subject</label>
-                <div className="relative">
-                  <EditableSubject 
-                    subject={editedSubject} 
-                    onSubjectChange={setEditedSubject}
-                    isEditing={isEditing}
-                  />
-                  <div className="absolute top-2 right-2 flex">
-                    <button
-                      onClick={() => toggleEditing()}
-                      className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
-                      title={isEditing ? "Save changes" : "Edit subject"}
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => copyToClipboard(editedSubject)}
-                      className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
-                      title="Copy subject to clipboard"
-                    >
-                      <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
-                    </button>
+                <h2 className="text-xl font-semibold text-white mb-2">Generated Subject</h2>
+                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
+                  <div className="relative">
+                    <EditableSubject 
+                      subject={editedSubject} 
+                      onSubjectChange={setEditedSubject}
+                      isEditing={isEditing}
+                    />
+                    <div className="absolute top-2 right-2 flex space-x-2">
+                      <button
+                        onClick={() => toggleEditing()}
+                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
+                        title={isEditing ? "Save changes" : "Edit subject"}
+                      >
+                        <PencilIcon className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(editedSubject)}
+                        className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none transition duration-150 ease-in-out"
+                        title="Copy subject to clipboard"
+                      >
+                        <ClipboardDocumentIcon className="h-5 w-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
             {generatedEmail && (
               <div className="mt-6">
-                <label className="block text-sm font-medium text-white mb-2">Generated Email</label>
-                <div className="relative">
-                  <div
-                    className="w-full p-4 border border-gray-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    style={{
-                      fontSize: '1rem',
-                      lineHeight: '1.5',
-                      minHeight: '200px',
-                      height: 'auto',
-                    }}
-                  >
-                    <EditableEmail 
-                      email={editedEmail} 
-                      onEmailChange={setEditedEmail} 
-                      isEditing={isEditing}
-                      name={name}
-                    />
-                  </div>
-                  <div className="absolute top-2 right-2 flex">
-                    <button
-                      onClick={() => toggleEditing()}
-                      className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none mr-2"
-                      title={isEditing ? "Save changes" : "Edit email"}
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => copyToClipboard(editedEmail)}
-                      className="p-2 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none"
-                      title="Copy email to clipboard"
-                    >
-                      <ClipboardDocumentIcon className="h-5 w-5 text-gray-600" />
-                    </button>
+                <h2 className="text-xl font-semibold text-white mb-2">Generated Email</h2>
+                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
+                  <div className="relative">
+                    <div className="w-full text-gray-800" style={{ minHeight: '200px' }}>
+                      <EditableEmail 
+                        email={editedEmail} 
+                        onEmailChange={setEditedEmail} 
+                        isEditing={isEditing}
+                        name={name}
+                      />
+                    </div>
+                    <div className="absolute top-2 right-2 flex space-x-2">
+                      <button
+                        onClick={() => toggleEditing()}
+                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
+                        title={isEditing ? "Save changes" : "Edit email"}
+                      >
+                        <PencilIcon className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(editedEmail)}
+                        className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none transition duration-150 ease-in-out"
+                        title="Copy email to clipboard"
+                      >
+                        <ClipboardDocumentIcon className="h-5 w-5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            {(copyPrompt || editPrompt) && (
-              <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg">
-                {copyPrompt || editPrompt}
               </div>
             )}
           </div>
@@ -580,6 +571,11 @@ export default function Home() {
           </p>
         </footer>
       </div>
+      {(copyPrompt || editPrompt) && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg z-50">
+          {copyPrompt || editPrompt}
+        </div>
+      )}
     </div>
   );
 }
