@@ -67,6 +67,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
               <input
                 type="text"
                 defaultValue={placeholder}
+                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
                 className="px-1 py-0.5 bg-purple-100 rounded border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
@@ -76,6 +77,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
                 }}
               />
             ) : (
+              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
               <span className="bg-purple-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
@@ -92,6 +94,7 @@ const EditableEmail: React.FC<EditableEmailProps> = ({ email, onEmailChange, isE
         <textarea
           value={email}
           onChange={(e) => onEmailChange(e.target.value)}
+          className="w-full h-full p-2 bg-white bg-opacity-90 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           className="w-full h-full p-2 bg-white bg-opacity-20 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           style={{ minHeight: '200px' }}
         />
@@ -120,6 +123,7 @@ const EditableSubject: React.FC<{
               <input
                 type="text"
                 defaultValue={placeholder}
+                className="px-1 py-0.5 bg-indigo-100 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-w-[50px]"
                 className="px-1 py-0.5 bg-purple-100 rounded border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[50px]"
                 style={{ width: `${placeholder.length + 2}ch` }}
                 onChange={(e) => {
@@ -129,6 +133,7 @@ const EditableSubject: React.FC<{
                 }}
               />
             ) : (
+              <span className="bg-indigo-200 px-1 py-0.5 rounded">{placeholder}</span>
               <span className="bg-purple-200 px-1 py-0.5 rounded">{placeholder}</span>
             )}
           </span>
@@ -146,9 +151,11 @@ const EditableSubject: React.FC<{
           type="text"
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
+          className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           className="w-full p-2 border border-purple-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         />
       ) : (
+        <div className="w-full p-2 border border-indigo-300 rounded-md shadow-sm bg-white text-gray-800">
         <div className="w-full p-2 border border-purple-300 rounded-md shadow-sm bg-white bg-opacity-20 text-white">
           {editableSubject}
         </div>
@@ -281,22 +288,16 @@ export default function Home() {
     setIsLoading(true);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     let prompt = `Generate a reply to the following email:
-
     ${inputEmail}
-
     Please use the following details for the reply:
     From: ${name}
     Tone: ${tone}
     Other Preferences: ${otherPreferences}
-
     Use square brackets [] to denote any placeholders or parts that might need editing, such as [Project Name] or [Specific Date].
     Do not use any symbols like ** in the email.
-
     Generate both a subject line (which should be a reply to the original subject) and the main email body. Format the response as follows:
     Subject: Re: [Generated Subject]
-
     [Generated Reply Body]`;
-
     try {
       const result = await model.generateContent(prompt);
       const response = await result.response;
@@ -316,7 +317,6 @@ export default function Home() {
       setIsLoading(false);
     }
   };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopyPrompt('Email copied!');
@@ -329,11 +329,11 @@ export default function Home() {
     setTimeout(() => setEditPrompt(''), 2000);
   };
 
-return (
-  <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
-    <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" style={{zIndex: 0}}></canvas>
-    {isLoading && <LoadingScreen />}
-    <div className="flex-grow flex flex-col relative z-10">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden flex flex-col">
+      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" style={{zIndex: 0}}></canvas>
+      {isLoading && <LoadingScreen />}
+      <div className="flex-grow flex flex-col relative z-10">
         <div className="max-w-4xl mx-auto w-full">
           <h1 className="text-4xl font-bold text-center text-white mb-8">AI Email Generator</h1>
           <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg shadow-lg rounded-lg p-6 space-y-6">
@@ -344,6 +344,7 @@ return (
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white bg-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   placeholder="Enter your name"
                 />
@@ -553,10 +554,10 @@ return (
                 Generate Reply
               </button>
             </div>
-
             {generatedSubject && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold text-white mb-2">Generated Subject</h2>
+                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
                 <div className="bg-purple-800 bg-opacity-50 rounded-lg p-4 shadow-md">
                   <div className="relative">
                     <EditableSubject 
@@ -567,6 +568,7 @@ return (
                     <div className="absolute top-2 right-2 flex space-x-2">
                       <button
                         onClick={() => toggleEditing()}
+                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
                         className="p-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none transition duration-150 ease-in-out"
                         title={isEditing ? "Save changes" : "Edit subject"}
                       >
@@ -584,14 +586,18 @@ return (
                 </div>
               </div>
             )}
-
+            {generatedEmail && (
             {(generatedEmail || generatedReply) && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold text-white mb-2">Generated Email</h2>
+                <div className="bg-white bg-opacity-90 rounded-lg p-4 shadow-md">
                 <div className="bg-purple-800 bg-opacity-50 rounded-lg p-4 shadow-md">
                   <div className="relative">
+                    <div className="w-full text-gray-800" style={{ minHeight: '200px' }}>
                     <div className="w-full text-white" style={{ minHeight: '200px' }}>
                       <EditableEmail 
+                        email={editedEmail} 
+                        onEmailChange={setEditedEmail} 
                         email={generatedReply || editedEmail} 
                         onEmailChange={generatedReply ? setEditedReply : setEditedEmail} 
                         isEditing={isEditing}
@@ -601,12 +607,14 @@ return (
                     <div className="absolute top-2 right-2 flex space-x-2">
                       <button
                         onClick={() => toggleEditing()}
+                        className="p-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none transition duration-150 ease-in-out"
                         className="p-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none transition duration-150 ease-in-out"
                         title={isEditing ? "Save changes" : "Edit email"}
                       >
                         <PencilIcon className="h-5 w-5" />
                       </button>
                       <button
+                        onClick={() => copyToClipboard(editedEmail)}
                         onClick={() => copyToClipboard(generatedReply || editedEmail)}
                         className="p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none transition duration-150 ease-in-out"
                         title="Copy email to clipboard"
@@ -620,7 +628,7 @@ return (
             )}
           </div>
         </div>
-        
+
         {/* Footer */}
         <footer className="mt-auto pt-8 text-center text-white relative z-20">
           <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
