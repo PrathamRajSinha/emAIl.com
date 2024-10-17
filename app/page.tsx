@@ -252,7 +252,7 @@ export default function Home() {
   const generateReply = async () => {
     setIsLoading(true);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    let prompt = `Write a reply to the following email:
+    const prompt = `Write a reply to the following email:
 
     Original Email:
     ${originalEmail}
