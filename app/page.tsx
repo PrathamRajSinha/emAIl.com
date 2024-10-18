@@ -667,10 +667,20 @@ export default function Home() {
           )}
         </div>
       </div>
-      <footer className="footer mt-8 text-center text-white">
-        <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
-        <p>Visit my <a href="https://prathamrajsinha.com" target="_blank" rel="noopener noreferrer" className="underline">portfolio</a></p>
-      </footer>
+<footer className="mt-auto pt-8 text-center text-white relative z-20">
+          <p>Made by Pratham | &copy; 2024 All Rights Reserved</p>
+          <p>Visit my portfolio: 
+            <a 
+              href="https://prathamrajsinha.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="underline ml-1 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
+              style={{ pointerEvents: 'auto' }}
+            >
+              prathamrajsinha.com
+            </a>
+          </p>
+        </footer>
     </div>
   );
 }
